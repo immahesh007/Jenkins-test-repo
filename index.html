@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hello, world: it works!</title>
+<style>
+  :root {
+    --bg: #efeaff;
+    --ink: #1b1340;
+    --muted: #5a5280;
+    --card: #ffffff;
+    --pink: #ff3d8b;
+    --cyan: #19c6e6;
+    --sun: #ffd23f;
+    --accent: var(--pink);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #140d33; --ink: #f4f0ff; --muted: #a79fd0; --card: #221752;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+    line-height: 1.55;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* drifting colour blobs behind the hero */
+  .blobs { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; animation: drift 14s ease-in-out infinite alternate; }
+  .b1 { width: 46vmax; height: 46vmax; background: var(--pink); top: -14vmax; left: -10vmax; }
+  .b2 { width: 40vmax; height: 40vmax; background: var(--cyan); bottom: -12vmax; right: -8vmax; animation-delay: -5s; }
+  .b3 { width: 26vmax; height: 26vmax; background: var(--sun); top: 38%; left: 55%; animation-delay: -9s; }
+  @keyframes drift { to { transform: translate(6vmax, 5vmax) scale(1.15); } }
+
+  main { position: relative; z-index: 1; width: min(980px, 100%); margin: 0 auto; padding: 0 22px; }
+
+  header.hero { min-height: 82vh; display: flex; flex-direction: column; justify-content: center; }
+  h1 {
+    font-size: clamp(3rem, 11vw, 7.5rem);
+    line-height: .95;
+    letter-spacing: -0.04em;
+    font-weight: 900;
+    margin: 0 0 22px;
+  }
+  .hero p { font-size: 1.2rem; max-width: 46ch; color: var(--muted); margin: 0 0 30px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+
+  button, .btn {
+    font: inherit; font-weight: 800;
+    border: 3px solid var(--ink);
+    background: var(--accent);
+    color: #fff;
+    padding: 13px 24px;
+    border-radius: 14px;
+    cursor: pointer;
+    box-shadow: 5px 5px 0 var(--ink);
+    transition: transform .12s, box-shadow .12s;
+    text-decoration: none;
+  }
+  button:hover, .btn:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--ink); }
+  button:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--ink); }
+  button:focus-visible { outline: 4px solid var(--cyan); outline-offset: 3px; }
+  button.ghost { background: var(--card); color: var(--ink); }
+
+  .counter { font-weight: 800; font-size: 1.1rem; }
+  .counter span { display: inline-block; min-width: 2ch; font-size: 2rem; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px; padding-bottom: 60px; }
+  .card {
+    background: var(--card);
+    border: 3px solid var(--ink);
+    border-radius: 20px;
+    padding: 24px;
+  }
+  .card:nth-child(1) { transform: rotate(-1.5deg); }
+  .card:nth-child(2) { transform: rotate(1deg); }
+  .card:nth-child(3) { transform: rotate(-.8deg); }
+  .card h2 { margin: 0 0 6px; font-size: 1.35rem; }
+  .card p { margin: 0; color: var(--muted); }
+  .emoji { font-size: 2.2rem; display: block; margin-bottom: 8px; }
+
+  footer { position: relative; z-index: 1; text-align: center; padding: 26px 22px 40px; color: var(--muted); }
+  footer code { background: var(--card); border: 2px solid var(--ink); border-radius: 8px; padding: 2px 10px; color: var(--ink); font-weight: 700; }
+
+  @media (max-width: 520px) { .card { transform: none !important; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="blobs" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
+<main>
+  <header class="hero">
+    <h1>It works.<br>Ship it again.</h1>
+    <p>A tiny page for testing deployments. Change something, push it, and see how fast it appears.</p>
+    <div class="actions">
+      <button id="color" type="button">Change colour</button>
+      <button id="count" class="ghost" type="button">Clicked <span id="n">0</span> times</button>
+    </div>
+  </header>
+
+  <section class="grid" aria-label="Highlights">
+    <article class="card"><span class="emoji">⚡</span><h2>Fast</h2><p>One HTML file. No build step and no dependencies.</p></article>
+    <article class="card"><span class="emoji">🎨</span><h2>Colourful</h2><p>Follows your light or dark mode automatically.</p></article>
+    <article class="card"><span class="emoji">📱</span><h2>Responsive</h2><p>Looks good on a phone, a laptop and a big screen.</p></article>
+  </section>
+</main>
+
+<footer>
+  Version <code id="ver">v1.0.0</code> · loaded <span id="time"></span>
+</footer>
+
+<script>
+  var colors = ['#ff3d8b', '#19c6e6', '#7a4dff', '#ff8a1f', '#1f9d78'];
+  var i = 0, n = 0;
+  document.getElementById('color').addEventListener('click', function () {
+    i = (i + 1) % colors.length;
+    document.documentElement.style.setProperty('--accent', colors[i]);
+  });
+  document.getElementById('count').addEventListener('click', function () {
+    document.getElementById('n').textContent = ++n;
+  });
+  document.getElementById('time').textContent = new Date().toLocaleTimeString();
+</script>
+</body>
+</html>
